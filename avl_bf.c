@@ -204,29 +204,27 @@ avlnode *avl_insert(avltree *avlt, void *data)
 	
 	/* replace the termination NIL pointer with the new node pointer */
 
-	new_node = (avlnode *) malloc(sizeof(avlnode));
-	if (new_node == NULL)
+	current = new_node = (avlnode *) malloc(sizeof(avlnode));
+	if (current == NULL)
 		return NULL; /* out of memory */
 
-	new_node->left = new_node->right = AVL_NIL(avlt);
-	new_node->parent = parent;
-	new_node->bf = 0;
-	new_node->data = data;
+	current->left = current->right = AVL_NIL(avlt);
+	current->parent = parent;
+	current->bf = 0;
+	current->data = data;
 
 	if (parent == AVL_ROOT(avlt) || avlt->compare(data, parent->data) < 0)
-		parent->left = new_node;
+		parent->left = current;
 	else
-		parent->right = new_node;
+		parent->right = current;
 
 	#ifdef AVL_MIN
-	if (avlt->min == NULL || avlt->compare(new_node->data, avlt->min->data) < 0)
-		avlt->min = new_node;
+	if (avlt->min == NULL || avlt->compare(current->data, avlt->min->data) < 0)
+		avlt->min = current;
 	#endif
 
 	/* rebalance */
 	
-	current = new_node; /* parent = current->parent */
-
 	while (parent != AVL_ROOT(avlt)) {
 		if (current == parent->left) {
 			if (parent->bf == 1) {
