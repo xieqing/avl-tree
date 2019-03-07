@@ -28,8 +28,12 @@ int compare_func(const void *d1, const void *d2)
 	
 	p1 = (mydata *) d1;
 	p2 = (mydata *) d2;
-	
-	return p1->key - p2->key;
+	if (p1->key == p2->key)
+		return 0;
+	else if (p1->key > p2->key)
+		return 1;
+	else
+		return -1;
 }
 
 void destroy_func(void *d)
