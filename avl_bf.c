@@ -99,7 +99,7 @@ avlnode *avl_successor(avltree *avlt, avlnode *node)
 		for ( ; p->left != AVL_NIL(avlt); p = p->left) ;
 	} else {
 		/* move up until we find it or hit the root */
-        for (p = node->parent; node == p->right; node = p, p = p->parent) ;
+		for (p = node->parent; node == p->right; node = p, p = p->parent) ;
 
 		if (p == AVL_ROOT(avlt))
 			p = NULL; /* not found */
@@ -223,9 +223,9 @@ avlnode *avl_insert(avltree *avlt, void *data)
 		avlt->min = current;
 	#endif
 
-	/* rebalance */
+	/* rebalance after insertion */
 	
-	while (parent != AVL_ROOT(avlt)) {
+	while (current != AVL_FIRST(avlt)) {
 		if (current == parent->left) {
 			if (parent->bf == 1) {
 				parent->bf = 0; /* height unchanged, goto break */
@@ -266,29 +266,25 @@ void *avl_delete(avltree *avlt, avlnode *node, int keep)
 	avlnode *target;
 	void *data;
 
-	/* choose node's in-order successor if it has two children */
-
 	data = node->data;
+
+	/* choose node's in-order successor if it has two children */
 	
 	if (node->left == AVL_NIL(avlt) || node->right == AVL_NIL(avlt)) {
 		target = node;
 
 		#ifdef AVL_MIN
-		if (avlt->min == node)
-			avlt->min = avl_successor(avlt, node); /* deleted, thus min = successor */
+		if (avlt->min == target)
+			avlt->min = avl_successor(avlt, target); /* deleted, thus min = successor */
 		#endif
 	} else {
 		target = avl_successor(avlt, node); /* node->right must not be NIL, thus move down */
 
-		node->data = target->data; /* swapped */
+		node->data = target->data; /* data swapped */
 
 		#ifdef AVL_MIN
-		/* idle, thus commented
-		if (avlt->min == node)
-			avlt->min = target;
-		*/
-		if (avlt->min == target)
-			avlt->min = node; /* swapped, thus min = node */
+		/* if min == node, then min = successor = node (swapped), thus idle */
+		/* if min == target, then min = successor, which is not the minimal, thus impossible */
 		#endif
 	}
 
@@ -297,7 +293,7 @@ void *avl_delete(avltree *avlt, avlnode *node, int keep)
 	current = target;
 	parent = current->parent;
 
-	while (parent != AVL_ROOT(avlt)) {
+	while (current != AVL_FIRST(avlt)) {
 		if (current == parent->left) {
 			if (parent->bf == -1) {
 				parent->bf = 0; /* height decreased, goto loop */
