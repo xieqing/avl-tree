@@ -6,12 +6,11 @@
 #ifndef _AVL_BF_HEADER
 #define _AVL_BF_HEADER
 
-#define AVL_DUP 1 /* feature 1 */
-#define AVL_MIN 2 /* feature 2 */
+#define AVL_DUP 1
+#define AVL_MIN 1
 
 /*
- * non-recursive implementation of balance factor based AVL tree
- *
+ * node->bf = height(node->right) - height(node->left)
  * balance factors can be kept up-to-date by knowning the previous balance factors and the change in height
  * it is not necesary to know the absolute height
  */
