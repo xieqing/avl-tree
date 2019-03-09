@@ -8,7 +8,7 @@
 
 #define mu_test(_s, _c) \
 do { \
-	printf("#%03d %s ", ++mu_tests, _s); \
+	printf("#%03d %s \n", ++mu_tests, _s); \
 	if (_c) { \
 		printf("PASSED\n"); \
 	} else { \
