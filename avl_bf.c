@@ -17,7 +17,6 @@ static avlnode *fix_delete_rightimbalance(avltree *avlt, avlnode *p);
 
 static int check_order(avltree *avlt, avlnode *n, void *min, void *max);
 static int check_height(avltree *avlt, avlnode *n);
-static int check_balance_factor(avltree *avlt, avlnode *n);
 
 static void print(avltree *avlt, avlnode *n, void (*print_func)(void *), int depth, char *label);
 static void destroy(avltree *avlt, avlnode *n);
@@ -139,7 +138,7 @@ void avl_print(avltree *avlt, void (*print_func)(void *))
 {
 	printf("\n--\n");
 	print(avlt, AVL_FIRST(avlt), print_func, 0, "T");
-	printf("\nheight = %d, bf = %d\n", check_height(avlt, AVL_FIRST(avlt)), check_balance_factor(avlt, AVL_FIRST(avlt)));
+	printf("\nheight = %d\n", check_height(avlt, AVL_FIRST(avlt)));
 }
 
 /*
@@ -159,17 +158,6 @@ int avl_check_height(avltree *avlt)
 	height = check_height(avlt, AVL_FIRST(avlt));
 
 	return (height < 0) ? 0 : 1;
-}
-
-/*
- * check balance factor of tree
- */
-int avl_check_bf(avltree *avlt)
-{
-	int bf;
-	bf = check_balance_factor(avlt, AVL_FIRST(avlt));
-
-	return (bf < -1 || bf > 1) ? 0 : 1;
 }
 
 /*
@@ -572,27 +560,6 @@ int check_height(avltree *avlt, avlnode *n)
 		return -1;
 	
 	return 1 + ((lh > rh) ? lh : rh);
-}
-
-/*
- * check balance factor recursively
- */
-int check_balance_factor(avltree *avlt, avlnode *n)
-{
-	int lbf, rbf;
-
-	if (n == AVL_NIL(avlt))
-		return 0;
-
-	lbf = check_balance_factor(avlt, n->left);
-	if (lbf < -1 || lbf > 1)
-		return lbf;
-
-	rbf = check_balance_factor(avlt, n->right);
-	if (rbf < -1 || rbf > 1)
-		return rbf;
-
-	return n->bf;
 }
 
 /*

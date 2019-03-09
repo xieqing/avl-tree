@@ -70,6 +70,5 @@ void *avl_delete(avltree *avlt, avlnode *node, int keep);
 
 int avl_check_order(avltree *avlt, void *min, void *max);
 int avl_check_heigt(avltree *avlt);
-int avl_check_bf(avltree *avlt);
 
 #endif /* _AVL_BF_HEADER */
