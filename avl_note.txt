@@ -3,7 +3,12 @@
  * May be freely redistributed, but copyright notice must be retained.
  */
 
-non-recursive implementation of balance factor based AVL tree
+An Iterative (non-recursive) BalanceFactor-based AVL Tree Implementation
+
+There are several choices when implementing AVL trees:
+- recursive or iterative
+- store height or balance factor
+- store parent reference or not
 
 ##################################################
 ## DEFINITION
@@ -29,6 +34,8 @@ A node N with BalanceFactor(N) < 0 is called "left-heavy", one with BalanceFacto
 Balance factors can be kept up-to-date by knowning the previous balance factors and the change in height - it is not necesary to know the absolute height.
 
 https://en.wikipedia.org/wiki/AVL_tree
+
+https://www.cs.usfca.edu/~galles/visualization/AVLtree.html
 
 ##################################################
 ## ROTATION
