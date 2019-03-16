@@ -48,10 +48,6 @@ A node N with BalanceFactor(N) < 0 is called "left-heavy", one with BalanceFacto
 
 Balance factors can be kept up-to-date by knowning the previous balance factors and the change in height - it is not necesary to know the absolute height.
 
-https://en.wikipedia.org/wiki/AVL_tree
-
-https://www.cs.usfca.edu/~galles/visualization/AVLtree.html
-
 ## ROTATION
 
 It is easy to check that a single rotation preserves the ordering requirement for a binary search tree. The keys in subtree A are less than or equal to x, the keys in tree C are greater than or equal to y, and the keys in B are between x and y.
@@ -514,6 +510,12 @@ replace the subject node or the replacement node with its child (which may be NI
              / \                     child/NIL
 child/NIL/NIL   NIL/child/NIL
 ```
+
+## References
+
+https://en.wikipedia.org/wiki/AVL_tree
+
+https://www.cs.usfca.edu/~galles/visualization/AVLtree.html
 
 ## License
 
