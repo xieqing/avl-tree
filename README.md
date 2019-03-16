@@ -83,8 +83,8 @@ After a modifying operation (e.g. insertion, deletion) it is necessary to update
 1. follow the same process as inserting into a binary search tree.
 2. backtracking (until reaches the root) the top-down path from the root to the new node, update the balance factors of all nodes, rebalance by an appropriate rotation if the balance factor temporarily becomes +2 or -2, terminate if the height of that subtree remains unchanged (has the same height as before insertion).
 
-Note: The effective insertion of the new node increases the height of the corresponding child tree from 0 to 1. Starting at this subtree, it is necessary to check each of the ancestors for consistency with the invariants of AVL trees. This is called "backtracking".
-Note: After rotation the subtree has the same height as before, thus backtracking terminate immediately.
+*Note: The effective insertion of the new node increases the height of the corresponding child tree from 0 to 1. Starting at this subtree, it is necessary to check each of the ancestors for consistency with the invariants of AVL trees. This is called "backtracking".*
+*Note: After rotation the subtree has the same height as before, thus backtracking terminate immediately.*
 
 **Deletion**
 
@@ -92,7 +92,7 @@ Note: After rotation the subtree has the same height as before, thus backtrackin
 2. backtracking (until reaches the root) the top-down path from the root to the subject node or the replacement node, update the balance factors of all nodes, rebalance by an appropriate rotation if the balance factor temporarily becomes +2 or -2, terminate if the height of that subtree remains unchanged (has the same height as before deletion).
 3. remove the subject node or the replacement node.
 
-Note: The effective deletion of the subject node or the replacement node decreases the height of the corresponding child tree either from 1 to 0 or from 2 to 1, if that node had a child. Starting at this subtree, it is necessary to check each of the ancestors for consistency with the invariants of AVL trees. This is called "backtracking".
+*Note: The effective deletion of the subject node or the replacement node decreases the height of the corresponding child tree either from 1 to 0 or from 2 to 1, if that node had a child. Starting at this subtree, it is necessary to check each of the ancestors for consistency with the invariants of AVL trees. This is called "backtracking".*
 
 **Rebalanced**
 
@@ -502,7 +502,7 @@ The sencond case: delete under x.left
 **Removing**
 
 ```
-replace the subject node or the replacement node with its child (which may be NIL)
+Replace the subject node or the replacement node with its child (which may be NIL)
 
             parent
               |                        parent
