@@ -510,4 +510,5 @@ Delete as in simple binary search tree, find the subject node or its replacement
 ## License
 
 Copyright (c) 2019 xieqing. https://github.com/xieqing
+
 May be freely redistributed, but copyright notice must be retained.
