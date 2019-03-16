@@ -33,10 +33,16 @@ In an AVL tree, the heights of the two child subtrees of any node differ by at m
 Lookup, insertion, and deletion all take O(log n) time in both the average and worst cases, where n is the number of nodes in the tree prior to the operation. Insertions and deletions may require the tree to be rebalanced by one or more tree rotations.
 
 In a binary search tree the balance factor of a node N is defined to be the height difference of its two child subtrees.
-    BalanceFactor(N) = Height(RightSubtree(N)) – Height(LeftSubtree(N))
+
+```
+BalanceFactor(N) = Height(RightSubtree(N)) – Height(LeftSubtree(N))
+```
 
 A binary search tree is defined to be an AVL tree if the invariant holds for every node N in the tree.
-    BalanceFactor(N) ∈ {–1,0,+1}
+
+```
+BalanceFactor(N) ∈ {–1,0,+1}
+```
 
 A node N with BalanceFactor(N) < 0 is called "left-heavy", one with BalanceFactor(N) > 0 is called "right-heavy", and one with BalanceFactor(N) = 0 is sometimes simply called "balanced".
 
@@ -101,212 +107,214 @@ rotations never violate the binary search property and the balance factor proper
 
 Insert as in simple binary search tree, backtrack the top-down path from the root to the new node, update balance factor, rebalance if needed, and terminate if the height of that subtree remains unchanged.
 
+**Inserting**
+
 ```
-	replace the termination NIL pointer with the new node
+Replace the termination NIL pointer with the new node
 
-    Before insertion
-          
-        parent   
-          |
-         NIL (current)    
+Before insertion
+      
+    parent   
+      |
+     NIL (current)    
 
-    After insertion
-    
-          parent (height increased)
-            |
-         new_node (current)
-           / \
-        NIL   NIL
+After insertion
+
+      parent (height increased)
+        |
+     new_node (current)
+       / \
+    NIL   NIL
 ```
 
 **Rebalancing**
 
 ```
-	Let x be the lowest node that violates the AVL property and let h be the height of its shorter subtree.
+Let x be the lowest node that violates the AVL property and let h be the height of its shorter subtree.
 
-    The first case: insert under x.left
+The first case: insert under x.left
 
-    1. insert under x.left.left
+1. insert under x.left.left
 
-        Before insertion
+    Before insertion
 
-                    x (h+2)
-                   / \
-            (h+1) y   C (h)
+                x (h+2)
+               / \
+        (h+1) y   C (h)
+             / \
+        (h) A   B (h)
+            ^ insert (A may be NIL)
+
+        bf(y) = 0; bf(x) = -1; height = h+2
+
+    After insertion (y's balance factor has been updated)
+
+                  x (h+3)
                  / \
-            (h) A   B (h)
-                ^ insert (A may be NIL)
+          (h+2) y   C (h)
+               / \
+        (h+1) A   B (h)
 
-            bf(y) = 0; bf(x) = -1; height = h+2
+        bf(y) = -1; bf(x) = -1; height = h+2
 
-        After insertion (y's balance factor has been updated)
+    After right rotation
+
+                y (h+2)
+               / \
+        (h+1) A   x (h+1)
+                 / \
+            (h) B   C (h)
+
+        bf(x) = 0; bf(y) = 0; height = h+2 (height unchanged)
+
+2. insert under x.left.right
+
+    Before insertion
+
+                x (h+2)
+               / \
+        (h+1) y   C (h)
+             / \
+        (h) A   B (h)
+                ^ insert (B may be NIL)
+
+        bf(y) = 0; bf(x) = -1; height = h+2
+
+    After insertion (y's balance factor has been updated)
+
+                x (h+3)
+               / \
+        (h+2) y   C (h)
+             / \
+        (h) A   B (h+1)
+
+        bf(y) = 1; bf(x) = -1; height = h+2
+
+    Let's expand B one more level (since B has height h+1, it cannot be empty)
 
                       x (h+3)
                      / \
               (h+2) y   C (h)
                    / \
-            (h+1) A   B (h)
-
-            bf(y) = -1; bf(x) = -1; height = h+2
-
-        After right rotation
-
-                    y (h+2)
-                   / \
-            (h+1) A   x (h+1)
+              (h) A   z' (h+1)
                      / \
-                (h) B   C (h)
+        (h/h-1/h=0) U   V (h-1/h/h=0)
 
-            bf(x) = 0; bf(y) = 0; height = h+2 (height unchanged)
-
-    2. insert under x.left.right
-
-        Before insertion
-
-                    x (h+2)
-                   / \
-            (h+1) y   C (h)
-                 / \
-            (h) A   B (h)
-                    ^ insert (B may be NIL)
-
-            bf(y) = 0; bf(x) = -1; height = h+2
-
-        After insertion (y's balance factor has been updated)
-
-                    x (h+3)
-                   / \
-            (h+2) y   C (h)
-                 / \
-            (h) A   B (h+1)
-
-            bf(y) = 1; bf(x) = -1; height = h+2
-
-        Let's expand B one more level (since B has height h+1, it cannot be empty)
-
-                          x (h+3)
-                         / \
-                  (h+2) y   C (h)
-                       / \
-                  (h) A   z' (h+1)
-                         / \
-            (h/h-1/h=0) U   V (h-1/h/h=0)
-
-        After left rotation
-
-                  x
-                 / \
-                z   C
-               / \
-              y   V
-             / \
-            A   U
-
-        After right rotation
-
-                      z (h+2)
-                     / \
-                    /   \
-             (h+1) y     x (h+1)
-                  / \   / \
-             (h) A   U V   C (h)
-            (h/h-1/h=0)(h-1/h/h=0)
-
-            bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height unchanged)
-            bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
-            bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
-
-    The second case: insert under x.right
-
-    1. insert under x.right.right
-
-        Before insertion
-
-                  x (h+2)
-                 / \
-            (h) A   y (h+1)
-                   / \
-              (h) B   C (h)
-                      ^ insert (C may be NIL)
-
-            bf(y) = 0; bf(x) = 1; height = h+2
-
-        After insertion (y's balance factor has been updated)
-
-                  x
-                 / \
-            (h) A   y (h+2)
-                   / \
-              (h) B   C (h+1)
-            
-            bf(y) = 1; bf(x) = 1; height = h+2
-
-        After left rotation
-
-                    y (h+2)
-                   / \
-            (h+1) x   C (h+1)
-                 / \
-            (h) A   B (h)
-
-            bf(x) = 0; bf(y) = 0; height = h+2 (height unchanged)
-
-    2. insert under x.right.left
-
-        Before insertion
-
-                  x (h+2)
-                 / \
-            (h) A   y (h+1)
-                   / \
-              (h) B   C (h)
-                  ^ insert (B may be NIL)
-
-            bf(y) = 0; bf(x) = 1; height = h+2
-
-        After insertion (y's balance factor has been updated)
-
-                  x
-                 / \
-            (h) A   y (h+2)
-                   / \
-            (h+1) B   C (h)
-
-            bf(y) = -1; bf(x) = 1; height = h+2
-
-        Let's expand it one more level (since B has height h+1, it cannot be empty)
-
-                          x (h+3)
-                         / \
-                    (h) A   y (h+2)
-                           / \
-                    (h+1) z'  C (h)
-                         / \
-            (h/h-1/h=0) U   V (h-1/h/h=0)
-
-        After right rotation
+    After left rotation
 
               x
              / \
-            A   z
-               / \
-              U   y
+            z   C
+           / \
+          y   V
+         / \
+        A   U
+
+    After right rotation
+
+                  z (h+2)
                  / \
-                V   C
+                /   \
+         (h+1) y     x (h+1)
+              / \   / \
+         (h) A   U V   C (h)
+        (h/h-1/h=0)(h-1/h/h=0)
 
-        After left rotation
+        bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height unchanged)
+        bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
+        bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
 
-                      z (h+2)
+The second case: insert under x.right
+
+1. insert under x.right.right
+
+    Before insertion
+
+              x (h+2)
+             / \
+        (h) A   y (h+1)
+               / \
+          (h) B   C (h)
+                  ^ insert (C may be NIL)
+
+        bf(y) = 0; bf(x) = 1; height = h+2
+
+    After insertion (y's balance factor has been updated)
+
+              x
+             / \
+        (h) A   y (h+2)
+               / \
+          (h) B   C (h+1)
+        
+        bf(y) = 1; bf(x) = 1; height = h+2
+
+    After left rotation
+
+                y (h+2)
+               / \
+        (h+1) x   C (h+1)
+             / \
+        (h) A   B (h)
+
+        bf(x) = 0; bf(y) = 0; height = h+2 (height unchanged)
+
+2. insert under x.right.left
+
+    Before insertion
+
+              x (h+2)
+             / \
+        (h) A   y (h+1)
+               / \
+          (h) B   C (h)
+              ^ insert (B may be NIL)
+
+        bf(y) = 0; bf(x) = 1; height = h+2
+
+    After insertion (y's balance factor has been updated)
+
+              x
+             / \
+        (h) A   y (h+2)
+               / \
+        (h+1) B   C (h)
+
+        bf(y) = -1; bf(x) = 1; height = h+2
+
+    Let's expand it one more level (since B has height h+1, it cannot be empty)
+
+                      x (h+3)
                      / \
-                    /   \
-             (h+1) y     x (h+1)
-                  / \   / \
-             (h) A   U V   C (h)
-            (h/h-1/h=0)(h-1/h/h=0)
+                (h) A   y (h+2)
+                       / \
+                (h+1) z'  C (h)
+                     / \
+        (h/h-1/h=0) U   V (h-1/h/h=0)
 
-            bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height unchanged)
-            bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
-            bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
+    After right rotation
+
+          x
+         / \
+        A   z
+           / \
+          U   y
+             / \
+            V   C
+
+    After left rotation
+
+                  z (h+2)
+                 / \
+                /   \
+         (h+1) y     x (h+1)
+              / \   / \
+         (h) A   U V   C (h)
+        (h/h-1/h=0)(h-1/h/h=0)
+
+        bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height unchanged)
+        bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
+        bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height unchanged)
 ```
 
 ## DELETION
@@ -316,195 +324,195 @@ Delete as in simple binary search tree, find the subject node or its replacement
 **Rebalancing**
 
 ```
-    Let x be the lowest node that violates the AVL property and let h+1 be the height of its shorter subtree.
+Let x be the lowest node that violates the AVL property and let h+1 be the height of its shorter subtree.
 
-    The first case: delete under x.right
+The first case: delete under x.right
 
-    1. x.left is left-heavy or balanced
+1. x.left is left-heavy or balanced
 
-        Before deletion
-        
-                          x (h+3)
-                         / \
-                  (h+2) y   C (h+1)
-                       / \  ^ delete
-            (h+1/h+1) A   B (h/h+1)
-            
-            bf(y) = -1; bf(x) = -1; height = h+3
-            bf(y) = 0; bf(x) = -1; height = h+3
-
-        After deletion
-        
-                          x
-                         / \
-                  (h+2) y'  C (h)
-                       / \
-            (h+1/h+1) A   B (h/h+1)
-
-        After right rotation
-
-                        y (h+2/h+3)
-                       / \
-            (h+1/h+1) A   x (h+1/h+2)
-                         / \
-                (h/h+1) B   C (h)
-            
-            bf(y') = -1; bf(x) = 0; bf(y) = 0; height = h+2 (height decreased)
-            bf(y') = 0; bf(x) = -1; bf(y) = 1; height = h+3 (height unchanged)
-
-    2. x.left is right-heavy
-
-        Before deletion
-        
-                        x (h+3)
-                       / \
-                (h+2) y   C (h+1)
-                     / \  ^ delete
-                (h) A   B (h+1)
-            
-            bf(y) = 1; bf(x) = -1; height = h+3
-
-        After deletion
-
-                        x (h+1)
-                       / \
-                (h+2) y   C (h)
+    Before deletion
+    
+                      x (h+3)
                      / \
-                (h) A   B (h+1)
-
-        Let's expand B one more level (since B has height h+1, it cannot be empty)
-
-                  (h+3) x
-                       / \
-                (h+2) y   C (h)
-                     / \
-                (h) A   z' (h+1)
-                       / \
-            (h/h-1/h) U   V (h-1/h/h)
-
-        After left rotation
-
-                  x
-                 / \
-                z   C
-               / \
-              y   V
-             / \
-            A   U
-            
-        After right rotation
-
-                     z (h+2)
-                    / \
-                   /   \
-            (h+1) y     x (h+1)
-                 / \   / \
-            (h) A   U V   C (h)
-            (h/h-1/h)(h-1/h/h)
-            
-            bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height decreased)
-            bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
-            bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
-
-    The sencond case: delete under x.left
-
-    1. x.right is right-heavy or balanced
-
-        Before deletion
+              (h+2) y   C (h+1)
+                   / \  ^ delete
+        (h+1/h+1) A   B (h/h+1)
         
-                     x (h+3)
-                    / \
-             (h+1) A   y (h+2)
-            delete ^  / \
-             (h/h+1) B   C (h+1/h+1)
-            
-            bf(y) = 1; bf(x) = 1; height = h+3
-            bf(y) = 0; bf(x) = 1; height = h+3
+        bf(y) = -1; bf(x) = -1; height = h+3
+        bf(y) = 0; bf(x) = -1; height = h+3
 
-        After deletion
+    After deletion
+    
+                      x
+                     / \
+              (h+2) y'  C (h)
+                   / \
+        (h+1/h+1) A   B (h/h+1)
 
+    After right rotation
+
+                    y (h+2/h+3)
+                   / \
+        (h+1/h+1) A   x (h+1/h+2)
+                     / \
+            (h/h+1) B   C (h)
+        
+        bf(y') = -1; bf(x) = 0; bf(y) = 0; height = h+2 (height decreased)
+        bf(y') = 0; bf(x) = -1; bf(y) = 1; height = h+3 (height unchanged)
+
+2. x.left is right-heavy
+
+    Before deletion
+    
                     x (h+3)
                    / \
-              (h) A   y' (h+2)
-                     / \
-            (h/h+1) B   C (h+1/h+1)
-
-        After left rotation
-
-                        y (h+2/h+3)
-                       / \
-            (h+1/h+2) x   C (h+1/h+1)
-                     / \
-                (h) A   B (h/h+1)
-                
-            bf(y') = 1; bf(x) = 0; bf(y) = 0; height = h+2 (height decreased)
-            bf(y') = 0; bf(x) = 1; bf(y) = -1; height = h+3 (height unchanged)
-
-    2. x.right is left-heavy
-
-        Before deletion
+            (h+2) y   C (h+1)
+                 / \  ^ delete
+            (h) A   B (h+1)
         
-                     x (h+3)
-                    / \
-             (h+1) A   y (h+2)
-            delete ^  / \
-               (h+1) B   C (h)
+        bf(y) = 1; bf(x) = -1; height = h+3
 
-            bf(y) = -1; bf(x) = 1; height = h+3
+    After deletion
 
-        After deletion
-
-                  x (h+3)
-                 / \
-            (h) A   y (h+2)
+                    x (h+1)
                    / \
-            (h+1) B   C (h)
+            (h+2) y   C (h)
+                 / \
+            (h) A   B (h+1)
 
-        Let's expand B one more level (since B has height h+1, it cannot be empty)
-        
-                        x (h+3)
-                       / \
-                  (h) A   y (h+2)
-                         / \
-                  (h+1) z'  C (h)
-                       / \
-            (h/h-1/h) U   V (h-1/h/h)
+    Let's expand B one more level (since B has height h+1, it cannot be empty)
 
-        After right rotation
+              (h+3) x
+                   / \
+            (h+2) y   C (h)
+                 / \
+            (h) A   z' (h+1)
+                   / \
+        (h/h-1/h) U   V (h-1/h/h)
+
+    After left rotation
 
               x
              / \
-            A   z
-               / \
-              U   y
-                 / \
-                V   C
-                
-        After left rotation
+            z   C
+           / \
+          y   V
+         / \
+        A   U
+        
+    After right rotation
 
-                     z (h+2)
-                    / \
-                   /   \
-            (h+1) y     x (h+1)
-                 / \   / \
-            (h) A   U V   C (h)
-             (h/h-1/h)(h-1/h/h)
+                 z (h+2)
+                / \
+               /   \
+        (h+1) y     x (h+1)
+             / \   / \
+        (h) A   U V   C (h)
+        (h/h-1/h)(h-1/h/h)
+        
+        bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height decreased)
+        bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
+        bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
+
+The sencond case: delete under x.left
+
+1. x.right is right-heavy or balanced
+
+    Before deletion
+    
+                 x (h+3)
+                / \
+         (h+1) A   y (h+2)
+        delete ^  / \
+         (h/h+1) B   C (h+1/h+1)
+        
+        bf(y) = 1; bf(x) = 1; height = h+3
+        bf(y) = 0; bf(x) = 1; height = h+3
+
+    After deletion
+
+                x (h+3)
+               / \
+          (h) A   y' (h+2)
+                 / \
+        (h/h+1) B   C (h+1/h+1)
+
+    After left rotation
+
+                    y (h+2/h+3)
+                   / \
+        (h+1/h+2) x   C (h+1/h+1)
+                 / \
+            (h) A   B (h/h+1)
             
-            bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height decreased)
-            bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
-            bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
+        bf(y') = 1; bf(x) = 0; bf(y) = 0; height = h+2 (height decreased)
+        bf(y') = 0; bf(x) = 1; bf(y) = -1; height = h+3 (height unchanged)
+
+2. x.right is left-heavy
+
+    Before deletion
+    
+                 x (h+3)
+                / \
+         (h+1) A   y (h+2)
+        delete ^  / \
+           (h+1) B   C (h)
+
+        bf(y) = -1; bf(x) = 1; height = h+3
+
+    After deletion
+
+              x (h+3)
+             / \
+        (h) A   y (h+2)
+               / \
+        (h+1) B   C (h)
+
+    Let's expand B one more level (since B has height h+1, it cannot be empty)
+    
+                    x (h+3)
+                   / \
+              (h) A   y (h+2)
+                     / \
+              (h+1) z'  C (h)
+                   / \
+        (h/h-1/h) U   V (h-1/h/h)
+
+    After right rotation
+
+          x
+         / \
+        A   z
+           / \
+          U   y
+             / \
+            V   C
+            
+    After left rotation
+
+                 z (h+2)
+                / \
+               /   \
+        (h+1) y     x (h+1)
+             / \   / \
+        (h) A   U V   C (h)
+         (h/h-1/h)(h-1/h/h)
+        
+        bf(z') = -1; bf(y) = 0; bf(x) = 1; bf(z) = 0; height = h+2 (height decreased)
+        bf(z') = 1; bf(y) = -1; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
+        bf(z') = 0; bf(y) = 0; bf(x) = 0; bf(z) = 0; height = h+2 (height decreased)
 ```
 
 **Removing**
 
 ```
-    replace the subject node or the replacement node with its child (which may be NIL)
+replace the subject node or the replacement node with its child (which may be NIL)
 
-                parent
-                  |                        parent
-                 node               ->       |
-                 / \                     child/NIL
-    child/NIL/NIL   NIL/child/NIL
+            parent
+              |                        parent
+             node               ->       |
+             / \                     child/NIL
+child/NIL/NIL   NIL/child/NIL
 ```
 
 ## License
