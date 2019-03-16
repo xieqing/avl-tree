@@ -507,9 +507,7 @@ Delete as in simple binary search tree, find the subject node or its replacement
     child/NIL/NIL   NIL/child/NIL
 ```
 
-```
-/*
- * Copyright (c) 2019 xieqing. https://github.com/xieqing
- * May be freely redistributed, but copyright notice must be retained.
- */
-```
+## License
+
+Copyright (c) 2019 xieqing. https://github.com/xieqing
+May be freely redistributed, but copyright notice must be retained.
