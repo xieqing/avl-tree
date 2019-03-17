@@ -21,6 +21,8 @@ Files:
 - avl_test.sh - unit test shell script
 - README.md - implementation note
 
+If you have suggestions, corrections, or comments, please get in touch with [xieqing](https://github.com/xieqing).
+
 ## DEFINITION
 
 The AVL tree is named after its two Soviet inventors, Georgy Adelson-Velsky and Evgenii Landis, who published it in their 1962 paper "An algorithm for the organization of information". It was the first such data structure to be invented.
@@ -68,6 +70,10 @@ After rotation
      / \
     A   B
 ```
+
+## SEARCH
+
+Searching for a specific key in an AVL tree can be done the same way as that of a normal binary search tree.
 
 ## MODIFICATION
 
@@ -496,9 +502,8 @@ child/NIL/NIL   NIL/child/NIL
 
 ## References
 
-[https://en.wikipedia.org/wiki/AVL_tree](https://en.wikipedia.org/wiki/AVL_tree)
-
-[https://www.cs.usfca.edu/~galles/visualization/AVLtree.html](https://www.cs.usfca.edu/~galles/visualization/AVLtree.html)
+1. [https://en.wikipedia.org/wiki/AVL_tree](https://en.wikipedia.org/wiki/AVL_tree)
+2. [https://www.cs.usfca.edu/~galles/visualization/AVLtree.html](https://www.cs.usfca.edu/~galles/visualization/AVLtree.html)
 
 ## License
 
