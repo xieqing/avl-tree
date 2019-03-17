@@ -211,27 +211,56 @@ avlnode *avl_insert(avltree *avlt, void *data)
 		avlt->min = current;
 	#endif
 
-	/* rebalance after insertion */
-	
-	while (current != AVL_FIRST(avlt)) {
-		if (current == parent->left) {
-			if (parent->bf == 1) {
-				parent->bf = 0; /* height unchanged, goto break */
+	/*
+	 * After insertion it is necessary to update the balance factors of all nodes, 
+	 * observe that all nodes requiring correction must be on the path from the root to the new node.
+	 * 
+	 * Backtracking the top-down path from the root to the new node:
+	 * 1. update the balance factor of parent node; 
+	 * 2. rebalance if the balance factor of parent node temporarily becomes +2 or -2; 
+	 * 3. terminate if the height of that parent subtree remains unchanged.
+	 */
+	while (current != AVL_FIRST(avlt)) { /* Loop (possibly up to the root) */
+		if (current == parent->left) { /* The height of left subtree of parent subtree increases */
+			if (parent->bf == 1) { /* parent subtree is right-heavy */
+				/*
+				 * height increase of left subtree is absorbed at parent node, 
+				 * height of parent subtree remains unchanged, thus backtracking terminate.
+				 */
+				parent->bf = 0; /* height unchanged, balanced, goto break */
 				break;
-			} else if (parent->bf == 0) {
-				parent->bf = -1; /* height increased, goto loop */
-			} else if (parent->bf == -1) {
-				fix_insert_leftimbalance(avlt, parent); /* height unchanged, goto break */
+			} else if (parent->bf == 0) { /* parent subtree is balanced */
+				/*
+				 * height of parent subtree increases by one, thus backtracking continue.
+				 */
+				parent->bf = -1; /* height increased, left-heavy, goto loop */
+			} else if (parent->bf == -1) { /* parent subtree is left-heavy */
+				/*
+				 * the balance factor becomes -2, this has to be repaired by an appropriate rotation
+				 * after which parent subtree has the same height as before.
+				 */
+				fix_insert_leftimbalance(avlt, parent); /* height unchanged, balanced, goto break */
 				break;
 			}
-		} else {
-			if (parent->bf == -1) {
-				parent->bf = 0; /* height unchanged, goto break */
+		} else { /* The height of right subtree of parent subtree increases */
+			if (parent->bf == -1) { /* parent subtree is left-heavy */
+				/*
+				 * height increase of right subtree is absorbed at parent node, 
+				 * height of parent subtree remains unchanged, thus backtracking terminate.
+				 */
+				parent->bf = 0; /* height unchanged, balanced, goto break */
 				break;
-			} else if (parent->bf == 0) {
-				parent->bf = 1; /* height increased, goto loop */
+			} else if (parent->bf == 0) { /* parent subtree is balanced */
+				/*
+				 * height of parent subtree increases by one, thus backtracking continue.
+				 */
+				parent->bf = 1; /* height increased, right-heavy, goto loop */
 			} else if (parent->bf == 1) {
-				fix_insert_rightimbalance(avlt, parent); /* height unchanged, goto break */
+				/*
+				 * the balance factor becomes 2, this has to be repaired by an appropriate rotation
+				 * after which parent subtree has the same height as before.
+				 */
+				fix_insert_rightimbalance(avlt, parent); /* height unchanged, balanced, goto break */
 				break;
 			}
 		}
@@ -241,7 +270,7 @@ avlnode *avl_insert(avltree *avlt, void *data)
 		parent = current->parent;
 	}
 
-	return new_node; /* inserted */
+	return new_node;
 }
 
 /*
@@ -276,35 +305,68 @@ void *avl_delete(avltree *avlt, avlnode *node, int keep)
 		#endif
 	}
 
-	/* rebalance if needed */
+	/*
+	 * After deletion it is necessary to update the balance factors of all nodes, 
+	 * observe that all nodes requiring correction must be on the path from the root to the target node,
+	 * which is either the subject node or the replacement node.
+	 * 
+	 * Backtracking the top-down path from the root to the target node:
+	 * 1. update the balance factor of parent node;
+	 * 2. rebalance if the balance factor of parent node temporarily becomes +2 or -2;
+	 * 3. terminate if the height of that parent subtree remains unchanged.
+	 */
 
 	current = target;
 	parent = current->parent;
 
-	while (current != AVL_FIRST(avlt)) {
-		if (current == parent->left) {
-			if (parent->bf == -1) {
-				parent->bf = 0; /* height decreased, goto loop */
-			} else if (parent->bf == 0) {
+	while (current != AVL_FIRST(avlt)) { /* Loop (possibly up to the root) */
+		if (current == parent->left) { /* The height of left subtree of parent subtree decreases */
+			if (parent->bf == -1) { /* parent subtree is left-heavy */
+				/*
+				 * height of parent subtree decreases by one, thus backtracking continue.
+				 */
+				parent->bf = 0; /* height decreased, balanced, goto loop */
+			} else if (parent->bf == 0) { /* parent subtree is balanced */
+				/*
+				 * height decrease of left subtree is absorbed at parent node, 
+				 * height of parent subtree remains unchanged, thus backtracking terminate.
+				 */
 				parent->bf = 1;
-				break; /* height unchanged, goto break */
-			} else if (parent->bf == 1) {
+				break; /* height unchanged, right-heavy, goto break */
+			} else if (parent->bf == 1) { /* parent subtree is right-heavy */
+				/*
+				 * the balance factor becomes 2, this has to be repaired by an appropriate rotation after which 
+				 * height of parent subtree remains unchanged or
+				 * height of parent subtree decreases by one.
+				 */
 				parent = fix_delete_rightimbalance(avlt, parent);
 				if (parent->bf == -1)
-					break; /* height unchanged, goto break */
-				/* height decreased, goto loop */
+					break; /* height unchanged, left-heavy, goto break */
+				/* parent->bf == 0; height decreased, balanced, goto loop */
 			}
-		} else {
-			if (parent->bf == 1) {
-				parent->bf = 0; /* height decreased, goto loop */
+		} else { /* The height of right subtree of parent subtree decreases */
+			if (parent->bf == 1) { /* parent subtree is right-heavy */
+				/*
+				 * height of parent subtree decreases by one, thus backtracking continue.
+				 */
+				parent->bf = 0; /* height decreased, balanced, goto loop */
 			} else if (parent->bf == 0) {
+				/*
+				 * height decrease of right subtree is absorbed at parent node, 
+				 * height of parent subtree remains unchanged, thus backtracking terminate.
+				 */
 				parent->bf = -1;
-				break; /* height unchanged, goto break */
-			} else if (parent->bf == -1) {
+				break; /* height unchanged, left-heavy, goto break */
+			} else if (parent->bf == -1) { /* parent subtree is left-heavy */
+				/*
+				 * the balance factor becomes -2, this has to be repaired by an appropriate rotation after which 
+				 * height of parent subtree remains unchanged or
+				 * height of parent subtree decreases by one.
+				 */
 				parent = fix_delete_leftimbalance(avlt, parent);
 				if (parent->bf == 1)
-					break; /* height unchanged, goto break */
-				/* height decreased, goto loop */
+					break; /* height unchanged, right-heavy, goto break */
+				/* height decreased, balanced, goto loop */
 			}
 		}
 
