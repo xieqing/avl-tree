@@ -217,7 +217,7 @@ avlnode *avl_insert(avltree *avlt, void *data)
 	 * 
 	 * Backtracking the top-down path from the root to the new node:
 	 * 1. update the balance factor of parent node; 
-	 * 2. rebalance if the balance factor of parent node temporarily becomes +2 or -2; 
+	 * 2. rebalance if the balance factor of parent node temporarily becomes +2 or -2 (parent subtree has the same height as before, thus backtracking terminate immediately); 
 	 * 3. terminate if the height of that parent subtree remains unchanged.
 	 */
 	while (current != AVL_FIRST(avlt)) { /* Loop (possibly up to the root) */
@@ -315,7 +315,6 @@ void *avl_delete(avltree *avlt, avlnode *node, int keep)
 	 * 2. rebalance if the balance factor of parent node temporarily becomes +2 or -2;
 	 * 3. terminate if the height of that parent subtree remains unchanged.
 	 */
-
 	current = target;
 	parent = current->parent;
 
