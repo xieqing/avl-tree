@@ -497,6 +497,7 @@ child/NIL/NIL   NIL/child/NIL
 ## References
 
 [https://en.wikipedia.org/wiki/AVL_tree](https://en.wikipedia.org/wiki/AVL_tree)
+
 [https://www.cs.usfca.edu/~galles/visualization/AVLtree.html](https://www.cs.usfca.edu/~galles/visualization/AVLtree.html)
 
 ## License
